@@ -1,9 +1,8 @@
-# CSVParserExcel
+# ********** CSV Filtering utility for Excel **********
 
-********** CSV Filtering utility for Excel **********
+### Written by Tad Tarrant. (aka Crowbarmaster).
 
-Written by Tad Tarrant. (aka Crowbarmaster).
-Created for my lovely wife, to her specifications.
+### Created for my lovely wife, to her specifications.
 
 This is a utility created to filter a CSV by column
 entries. There were a couple goals at hand to start
