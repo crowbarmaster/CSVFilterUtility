@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVParserAddin", "ExcelAddIn1\CSVParserAddin.csproj", "{096B3639-4AA5-4C57-8A69-4ABEBB9EBA95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVParserAddin", "Src\CSVParserAddin.csproj", "{096B3639-4AA5-4C57-8A69-4ABEBB9EBA95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
