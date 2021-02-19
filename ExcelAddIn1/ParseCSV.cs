@@ -154,7 +154,7 @@ namespace ExcelAddIn1
                                         else
                                         {
                                             string errMsg = "Error parsing text into a numeric value.";
-                                            string msgDetail = "Please check the collumn your searching contains only a '$' or '.' and numbers!";
+                                            string msgDetail = $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})";
                                             if (new AlertDialog(errMsg, msgDetail).ShowDialog() == DialogResult.OK)
                                             {
                                                 KillFlag = true;
@@ -168,7 +168,7 @@ namespace ExcelAddIn1
                             else
                             {
                                 string errMsg = "Error parsing text into a numeric value.";
-                                string msgDetail = "Please check the collumn your searching contains only a '$' or '.' and numbers!";
+                                string msgDetail = $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})";
                                 if (new AlertDialog(errMsg, msgDetail).ShowDialog() == DialogResult.OK)
                                 {
                                     KillFlag = true;
@@ -233,7 +233,7 @@ namespace ExcelAddIn1
                             else
                             {
                                 string errMsg = "Error parsing text into a date value.";
-                                string msgDetail = "Please check the column your searching contains only dates in dd/mm/yyyy format!";
+                                string msgDetail = $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})";
                                 if (new AlertDialog(errMsg, msgDetail).ShowDialog() == DialogResult.OK)
                                 {
                                     KillFlag = true;
