@@ -35,30 +35,34 @@ namespace ExcelAddIn1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartBtn));
             this.tab1 = this.Factory.CreateRibbonTab();
-            this.group1 = this.Factory.CreateRibbonGroup();
+            this.CSVTools = this.Factory.CreateRibbonGroup();
             this.ShowParser = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
-            this.group1.SuspendLayout();
+            this.CSVTools.SuspendLayout();
             this.SuspendLayout();
             // 
             // tab1
             // 
             this.tab1.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office;
-            this.tab1.Groups.Add(this.group1);
-            this.tab1.Label = "TabAddIns";
+            this.tab1.ControlId.OfficeId = "TabData";
+            this.tab1.Groups.Add(this.CSVTools);
+            this.tab1.Label = "TabData";
             this.tab1.Name = "tab1";
             // 
-            // group1
+            // CSVTools
             // 
-            this.group1.Items.Add(this.ShowParser);
-            this.group1.Label = "group1";
-            this.group1.Name = "group1";
+            this.CSVTools.Items.Add(this.ShowParser);
+            this.CSVTools.Label = "CSV Tools";
+            this.CSVTools.Name = "CSVTools";
             // 
             // ShowParser
             // 
+            this.ShowParser.Image = ((System.Drawing.Image)(resources.GetObject("ShowParser.Image")));
             this.ShowParser.Label = "Start CSV parser";
             this.ShowParser.Name = "ShowParser";
+            this.ShowParser.ShowImage = true;
             this.ShowParser.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.ShowParser_Click);
             // 
             // StartBtn
@@ -69,8 +73,8 @@ namespace ExcelAddIn1
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.Ribbon1_Load);
             this.tab1.ResumeLayout(false);
             this.tab1.PerformLayout();
-            this.group1.ResumeLayout(false);
-            this.group1.PerformLayout();
+            this.CSVTools.ResumeLayout(false);
+            this.CSVTools.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -78,7 +82,7 @@ namespace ExcelAddIn1
         #endregion
 
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
-        internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
+        internal Microsoft.Office.Tools.Ribbon.RibbonGroup CSVTools;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton ShowParser;
     }
 
