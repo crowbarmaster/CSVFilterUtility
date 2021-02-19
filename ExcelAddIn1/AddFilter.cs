@@ -43,16 +43,29 @@ namespace ExcelAddIn1
             saveAllChkBox.Click += SaveAllChkBox_Click;
 
             OpBoxes = new List<CheckBox>
-            { 
-                matchChkBox, rangeChkBox, notEqualChkBox, 
-                greaterChkBox, greaterEqualChkBox, lesserChkBox, 
-                lessEqualChkBox, startsWithChkBox, containsChkBox 
+            {
+                matchChkBox, rangeChkBox, notEqualChkBox,
+                greaterChkBox, greaterEqualChkBox, lesserChkBox,
+                lessEqualChkBox, startsWithChkBox, containsChkBox
             };
-            
+
             if (filter.DisplayName != "null")
             {
                 rangeMaxLbl.Visible = false;
                 rangeMaxBox.Visible = false;
+
+                switch (filter.SelectedInput)
+                {
+                    case Filter.InputType.Numeric:
+                        DisableChecks(numChkBox, null);
+                        break;
+                    case Filter.InputType.String:
+                        DisableChecks(stringChkBox, null);
+                        break;
+                    case Filter.InputType.DaysOld:
+                        DisableChecks(daysOldChkBox, null);
+                        break;
+                }
 
                 switch (filter.SelectedType)
                 {
@@ -102,13 +115,17 @@ namespace ExcelAddIn1
                         break;
                 }
 
-                switch (selectedOutput)
+                switch (filter.SelectedOutput)
                 {
                     case Filter.OutputType.Edit:
-                        filterEditChkBox.Checked = true;
+                        FilterEditChkBox_Click(filterEditChkBox, null);
+                        filterEditColBox.Text = filter.EditColumn;
+                        filterEditValBox.Text = filter.EditValue;
                         break;
                     case Filter.OutputType.Insert:
-                        filterInsertChkBox.Checked = true;
+                        FilterInsertChkBox_Click(filterInsertChkBox, null);
+                        filterEditColBox.Text = filter.EditColumn;
+                        filterEditValBox.Text = filter.EditValue;
                         break;
                 }
 
@@ -131,9 +148,10 @@ namespace ExcelAddIn1
                 rangeMaxLbl.Visible = false;
                 rangeMaxBox.Visible = false;
                 rangeMinMatchLbl.Text = "               Value:";
+
+                DisableChecks(numChkBox, null);
             }
             FilterToPass = filter;
-            DisableChecks(numChkBox, null);
         }
 
         private void SaveAllChkBox_Click(object sender, EventArgs e)
