@@ -9,7 +9,7 @@ entries. There were a couple goals at hand to start
 with. This utility needed to:
 ```
   -Filter a CSV file with speed and accuracy.
-  -Run in a resource-starved enviornment.
+  -Run in a resource-starved environment.
   -Optionally, run as an Excel add-in. 
 ```
 The current result is still beta, however exceeds
@@ -17,7 +17,7 @@ expectations. A single filter has seen speeds of
 almost 14,000 lines-per-second. The process is simple.
 A line is read and split to an array. Then the selected
 search column's value is then compared to an assortment 
-of different opperations available to filter by. Once a
+of different operations available to filter by. Once a
 match is made, the user can opt to edit a column with a
 static value, or insert a new column with a specified 
 value. This value can be specified as a numeric value,
@@ -32,7 +32,7 @@ the following ways:
   -Less than 
   -Greater than or equal to
   -Less than or equal to
-  -Witin a range (Column value is greater than or equal
+  -Within a range (Column value is greater than or equal
   to selected minimum, but less than or equal to selected
   maximum.)
 ```
