@@ -14,10 +14,9 @@ namespace ExcelAddIn1
         ParseCSV csvParser;
         Progress<double> Progress;
         TextWriter mergeWriter;
-        bool didMerge = false;
         int indexCount = 0;
 
-        public progressDialog(FileInfo inFile, TextWriter writer, bool mergeFiles, List<Filter> filters)
+        public progressDialog(FileInfo inFile, string mergePath, bool mergeFiles, List<Filter> filters)
         {
             InitializeComponent();
 
@@ -26,7 +25,14 @@ namespace ExcelAddIn1
             InFile = inFile;
             Filters = filters;
             fileSize = inFile.Length;
-            mergeWriter = writer;
+
+            MaximizeBox = false;
+            MinimizeBox = false;
+
+            if (mergeFiles)
+            {
+                mergeWriter = new StreamWriter(mergePath);
+            }
             csvParser = new ParseCSV();
             Progress = new Progress<double>();
             Progress.ProgressChanged += (s, value) =>
@@ -43,7 +49,14 @@ namespace ExcelAddIn1
                     {
                         if (!csvParser.StopWatch.IsRunning)
                         {
-                            if(mergeFiles)
+                            if (csvParser.Aborted)
+                            {
+                                waiting = false;
+                                progressLbl.Text = $@"Process completed in error! Check filters or input file, and try again!";
+                                cancelBtn.Text = "Close";
+                                break;
+                            }
+                            if (mergeFiles)
                             {
                                 waiting = false;
                                 bool wroteHeader = false;
@@ -72,7 +85,8 @@ namespace ExcelAddIn1
                                     reader.Close();
                                 }
                                 mergeFiles = false;
-                                //mergeWriter.Close();
+                                mergeWriter.Flush();
+                                mergeWriter.Close();
                             }
                             waiting = false;
                             int LPS = (int)(csvParser.curIndex / csvParser.StopWatch.Elapsed.TotalSeconds);

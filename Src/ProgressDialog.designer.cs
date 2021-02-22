@@ -29,6 +29,7 @@ namespace ExcelAddIn1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(progressDialog));
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
             this.progressLbl = new System.Windows.Forms.Label();
@@ -76,13 +77,17 @@ namespace ExcelAddIn1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(800, 125);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.progressLbl);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar);
             this.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "progressDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Filtering CSV... Please waIt!";
             this.ResumeLayout(false);
             this.PerformLayout();
