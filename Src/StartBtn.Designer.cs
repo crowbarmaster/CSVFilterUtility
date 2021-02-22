@@ -59,8 +59,9 @@ namespace ExcelAddIn1
             // 
             // ShowParser
             // 
+            this.ShowParser.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge;
             this.ShowParser.Image = ((System.Drawing.Image)(resources.GetObject("ShowParser.Image")));
-            this.ShowParser.Label = "Start CSV parser";
+            this.ShowParser.Label = "Start CSV Filtering Utility";
             this.ShowParser.Name = "ShowParser";
             this.ShowParser.ShowImage = true;
             this.ShowParser.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.ShowParser_Click);
