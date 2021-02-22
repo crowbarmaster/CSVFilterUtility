@@ -29,6 +29,7 @@ namespace ExcelAddIn1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.csvOpenFileInfo = new System.Windows.Forms.Label();
             this.openBtn = new System.Windows.Forms.Button();
             this.doRemoveBtn = new System.Windows.Forms.Button();
@@ -41,6 +42,10 @@ namespace ExcelAddIn1
             this.mergeOutputChkBox = new System.Windows.Forms.CheckBox();
             this.mergeOutputBtn = new System.Windows.Forms.Button();
             this.mergeOutputLbl = new System.Windows.Forms.Label();
+            this.settingsBtn = new System.Windows.Forms.Button();
+            this.clearFilterListBtn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // csvOpenFileInfo
@@ -68,7 +73,7 @@ namespace ExcelAddIn1
             // 
             this.doRemoveBtn.Enabled = false;
             this.doRemoveBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.doRemoveBtn.Location = new System.Drawing.Point(12, 285);
+            this.doRemoveBtn.Location = new System.Drawing.Point(15, 286);
             this.doRemoveBtn.Name = "doRemoveBtn";
             this.doRemoveBtn.Size = new System.Drawing.Size(172, 23);
             this.doRemoveBtn.TabIndex = 9;
@@ -84,16 +89,16 @@ namespace ExcelAddIn1
             this.filterListBox.Location = new System.Drawing.Point(205, 109);
             this.filterListBox.Name = "filterListBox";
             this.filterListBox.Size = new System.Drawing.Size(290, 200);
-            this.filterListBox.TabIndex = 5;
+            this.filterListBox.TabIndex = 11;
             this.filterListBox.SelectedIndexChanged += new System.EventHandler(this.filterListBox_SelectedIndexChanged);
             // 
             // addBtn
             // 
             this.addBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.addBtn.Location = new System.Drawing.Point(12, 184);
+            this.addBtn.Location = new System.Drawing.Point(15, 168);
             this.addBtn.Name = "addBtn";
             this.addBtn.Size = new System.Drawing.Size(172, 23);
-            this.addBtn.TabIndex = 6;
+            this.addBtn.TabIndex = 5;
             this.addBtn.Text = "Add new filter";
             this.addBtn.UseVisualStyleBackColor = true;
             this.addBtn.Click += new System.EventHandler(this.addBtn_Click);
@@ -101,10 +106,10 @@ namespace ExcelAddIn1
             // editBtn
             // 
             this.editBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.editBtn.Location = new System.Drawing.Point(12, 213);
+            this.editBtn.Location = new System.Drawing.Point(15, 196);
             this.editBtn.Name = "editBtn";
             this.editBtn.Size = new System.Drawing.Size(172, 23);
-            this.editBtn.TabIndex = 7;
+            this.editBtn.TabIndex = 6;
             this.editBtn.Text = "Edit selection";
             this.editBtn.UseVisualStyleBackColor = true;
             this.editBtn.Click += new System.EventHandler(this.editBtn_Click);
@@ -112,10 +117,10 @@ namespace ExcelAddIn1
             // RemoveBtn
             // 
             this.RemoveBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RemoveBtn.Location = new System.Drawing.Point(12, 242);
+            this.RemoveBtn.Location = new System.Drawing.Point(15, 225);
             this.RemoveBtn.Name = "RemoveBtn";
             this.RemoveBtn.Size = new System.Drawing.Size(172, 23);
-            this.RemoveBtn.TabIndex = 8;
+            this.RemoveBtn.TabIndex = 7;
             this.RemoveBtn.Text = "Remove selection";
             this.RemoveBtn.UseVisualStyleBackColor = true;
             this.RemoveBtn.Click += new System.EventHandler(this.RemoveBtn_Click);
@@ -123,7 +128,7 @@ namespace ExcelAddIn1
             // loadFiltersBtn
             // 
             this.loadFiltersBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.loadFiltersBtn.Location = new System.Drawing.Point(13, 109);
+            this.loadFiltersBtn.Location = new System.Drawing.Point(15, 109);
             this.loadFiltersBtn.Name = "loadFiltersBtn";
             this.loadFiltersBtn.Size = new System.Drawing.Size(172, 23);
             this.loadFiltersBtn.TabIndex = 3;
@@ -134,7 +139,7 @@ namespace ExcelAddIn1
             // saveFiltersBtn
             // 
             this.saveFiltersBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.saveFiltersBtn.Location = new System.Drawing.Point(12, 138);
+            this.saveFiltersBtn.Location = new System.Drawing.Point(15, 137);
             this.saveFiltersBtn.Name = "saveFiltersBtn";
             this.saveFiltersBtn.Size = new System.Drawing.Size(172, 23);
             this.saveFiltersBtn.TabIndex = 4;
@@ -148,10 +153,9 @@ namespace ExcelAddIn1
             this.mergeOutputChkBox.Enabled = false;
             this.mergeOutputChkBox.Location = new System.Drawing.Point(13, 41);
             this.mergeOutputChkBox.Name = "mergeOutputChkBox";
-            this.mergeOutputChkBox.Size = new System.Drawing.Size(470, 17);
+            this.mergeOutputChkBox.Size = new System.Drawing.Size(183, 17);
             this.mergeOutputChkBox.TabIndex = 1;
-            this.mergeOutputChkBox.Text = "Merge filters after filtering. NOTE: Verify filters produce unique results or dup" +
-    "licates will happen!";
+            this.mergeOutputChkBox.Text = "Merge filter list outputs to one file:";
             this.mergeOutputChkBox.UseVisualStyleBackColor = true;
             this.mergeOutputChkBox.CheckedChanged += new System.EventHandler(this.mergeOutputChkBox_CheckedChanged);
             // 
@@ -180,11 +184,53 @@ namespace ExcelAddIn1
             this.mergeOutputLbl.Text = "Merge output to...";
             this.mergeOutputLbl.Visible = false;
             // 
+            // settingsBtn
+            // 
+            this.settingsBtn.Location = new System.Drawing.Point(420, 11);
+            this.settingsBtn.Name = "settingsBtn";
+            this.settingsBtn.Size = new System.Drawing.Size(75, 23);
+            this.settingsBtn.TabIndex = 10;
+            this.settingsBtn.Text = "Settings";
+            this.settingsBtn.UseVisualStyleBackColor = true;
+            this.settingsBtn.Click += new System.EventHandler(this.settingsBtn_Click);
+            // 
+            // clearFilterListBtn
+            // 
+            this.clearFilterListBtn.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.clearFilterListBtn.Location = new System.Drawing.Point(15, 255);
+            this.clearFilterListBtn.Name = "clearFilterListBtn";
+            this.clearFilterListBtn.Size = new System.Drawing.Size(172, 23);
+            this.clearFilterListBtn.TabIndex = 8;
+            this.clearFilterListBtn.Text = "Clear entire list";
+            this.clearFilterListBtn.UseVisualStyleBackColor = true;
+            this.clearFilterListBtn.Click += new System.EventHandler(this.clearFilterListBtn_Click);
+            // 
+            // label6
+            // 
+            this.label6.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label6.Location = new System.Drawing.Point(8, 163);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(188, 2);
+            this.label6.TabIndex = 37;
+            // 
+            // label1
+            // 
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Location = new System.Drawing.Point(7, 281);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(188, 2);
+            this.label1.TabIndex = 38;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(507, 321);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.clearFilterListBtn);
+            this.Controls.Add(this.settingsBtn);
             this.Controls.Add(this.mergeOutputBtn);
             this.Controls.Add(this.mergeOutputLbl);
             this.Controls.Add(this.mergeOutputChkBox);
@@ -197,7 +243,12 @@ namespace ExcelAddIn1
             this.Controls.Add(this.doRemoveBtn);
             this.Controls.Add(this.openBtn);
             this.Controls.Add(this.csvOpenFileInfo);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Main";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CSV Line Filtering Utility";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -218,6 +269,10 @@ namespace ExcelAddIn1
         private System.Windows.Forms.CheckBox mergeOutputChkBox;
         private System.Windows.Forms.Button mergeOutputBtn;
         private System.Windows.Forms.Label mergeOutputLbl;
+        private System.Windows.Forms.Button settingsBtn;
+        private System.Windows.Forms.Button clearFilterListBtn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label1;
     }
 }
 

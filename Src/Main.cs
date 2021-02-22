@@ -7,12 +7,13 @@ namespace ExcelAddIn1
 {
     public partial class Main : Form
     {
+        public static List<Filter> Filters = new List<Filter>();
+        public static SettingsStore AppSettings = new SettingsStore();
+        public static string AppSettingsSavePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\CSVFU_Excel\Settings.dat";
         public Filter filterToEdit;
-
         FileInfo openedFile;
-        TextWriter mergeWriter = null;
+        string mergeFilePath;
         bool mergeFiles = false;
-        List<Filter> Filters = new List<Filter>();
         readonly OpenFileDialog openDialog = new OpenFileDialog();
         readonly SaveFileDialog saveDialog = new SaveFileDialog();
 
@@ -20,24 +21,28 @@ namespace ExcelAddIn1
         {
             InitializeComponent();
 
+            AppSettings.Load();
+            if(Filters.Count > 0)
+            {
+                filterListBox.Enabled = true;
+                foreach(Filter filter in Filters)
+                {
+                    filterListBox.Items.Add(filter.DisplayName);
+                }
+            }
             openDialog.FileName = "csvFile.csv";
             openDialog.DefaultExt = ".csv";
             openDialog.Filter = "CSV Files|*.csv";
-            openDialog.InitialDirectory = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\CSVs";
+            openDialog.InitialDirectory = AppSettings.InputLocation;
             saveDialog.FileName = $"{openDialog.SafeFileName.Substring(0, openDialog.SafeFileName.Length - 4)}-merged.csv";
             saveDialog.DefaultExt = ".csv";
             saveDialog.Filter = "CSV Files|*.csv";
-            saveDialog.InitialDirectory = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\CSVs";
+            saveDialog.InitialDirectory = AppSettings.InputLocation;
             if (!Directory.Exists(openDialog.InitialDirectory))
             {
                 Directory.CreateDirectory(openDialog.InitialDirectory);
             }
-            addBtn.Enabled = false;
-            editBtn.Enabled = false;
-            RemoveBtn.Enabled = false;
-            saveFiltersBtn.Enabled = false;
-            loadFiltersBtn.Enabled = false;
-            doRemoveBtn.Enabled = false;
+            MinimizeBox = MaximizeBox = doRemoveBtn.Enabled = loadFiltersBtn.Enabled = saveFiltersBtn.Enabled = clearFilterListBtn.Enabled = RemoveBtn.Enabled = editBtn.Enabled = addBtn.Enabled = false;
 
         }
 
@@ -50,21 +55,10 @@ namespace ExcelAddIn1
                 float sizeKB = fileLen / 1024;
                 float sizeMB = sizeKB / 1024;
                 string displaySize;
-                if (sizeKB > 2000)
-                {
-                    displaySize = $"{sizeMB.ToString("0.00")} MB";
-                }
-                else
-                {
-                    displaySize = $"{sizeKB.ToString("0.00")} KB";
-                }
+                displaySize = sizeKB > 2000 ? $"{sizeMB.ToString("0.00")} MB" : $"{sizeKB.ToString("0.00")} KB";
                 csvOpenFileInfo.Text = $"Opened file {openedFile.Name} Size: {displaySize}";
-                saveFiltersBtn.Enabled = true;
-                loadFiltersBtn.Enabled = true;
-                addBtn.Enabled = true;
-                editBtn.Enabled = true;
-                RemoveBtn.Enabled = true;
-                mergeOutputChkBox.Enabled = true;
+                clearFilterListBtn.Enabled = RemoveBtn.Enabled = editBtn.Enabled = addBtn.Enabled = loadFiltersBtn.Enabled = mergeOutputChkBox.Enabled = saveFiltersBtn.Enabled = true;
+                doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
             }
         }
 
@@ -72,7 +66,7 @@ namespace ExcelAddIn1
         {
             if (Filters.Count > 0)
             {
-                progressDialog dialog = new progressDialog(openedFile, mergeWriter, mergeFiles, Filters);
+                progressDialog dialog = new progressDialog(openedFile, mergeFilePath, mergeFiles, Filters);
                 dialog.ShowDialog();
             }
         }
@@ -87,7 +81,7 @@ namespace ExcelAddIn1
                 filterListBox.Items.Add(filterForm.FilterToPass.DisplayName);
             }
             filterListBox.Refresh();
-            doRemoveBtn.Enabled = true;
+            doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
         }
 
         private void editBtn_Click(object sender, EventArgs e)
@@ -113,14 +107,7 @@ namespace ExcelAddIn1
                     filterListBox.Refresh();
                 }
             }
-            if (filterListBox.Items.Count > 0)
-            {
-                doRemoveBtn.Enabled = true;
-            }
-            else
-            {
-                doRemoveBtn.Enabled = false;
-            }
+            doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
         }
 
         private void RemoveBtn_Click(object sender, EventArgs e)
@@ -142,14 +129,7 @@ namespace ExcelAddIn1
                     filterListBox.Refresh();
                 }
             }
-            if (filterListBox.Items.Count > 0)
-            {
-                doRemoveBtn.Enabled = true;
-            }
-            else
-            {
-                doRemoveBtn.Enabled = false;
-            }
+            doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
         }
 
         private void loadFiltersBtn_Click(object sender, EventArgs e)
@@ -170,7 +150,7 @@ namespace ExcelAddIn1
                     filterListBox.Items.Add(filter.DisplayName);
                 }
                 filterListBox.Refresh();
-                doRemoveBtn.Enabled = true;
+                doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
             }
         }
 
@@ -189,31 +169,81 @@ namespace ExcelAddIn1
 
         private void filterListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (filterListBox.Items.Count > 0)
-            {
-                doRemoveBtn.Enabled = true;
-            }
-            else
-            {
-                doRemoveBtn.Enabled = false;
-            }
+            doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
         }
 
         private void mergeOutputChkBox_CheckedChanged(object sender, EventArgs e)
         {
-            mergeOutputBtn.Visible = mergeOutputChkBox.Checked;
-            mergeOutputBtn.Enabled = mergeOutputChkBox.Checked;
-            mergeOutputLbl.Visible = mergeOutputChkBox.Checked;
-            mergeOutputLbl.Enabled = mergeOutputChkBox.Checked;
-            mergeFiles = true;
+            mergeFiles = mergeOutputLbl.Enabled = mergeOutputLbl.Visible = mergeOutputBtn.Enabled = mergeOutputBtn.Visible = mergeOutputChkBox.Checked;
         }
 
         private void mergeOutputBtn_Click(object sender, EventArgs e)
         {
             if (saveDialog.ShowDialog() == DialogResult.OK)
             {
-                mergeWriter = new StreamWriter(saveDialog.FileName);
+                mergeFilePath = saveDialog.FileName;
+                FileInfo fileInfo = new FileInfo(mergeFilePath);
+                mergeOutputLbl.Text = $"{fileInfo.Name} selected to merge outputs to";
             }
+        }
+
+        private void settingsBtn_Click(object sender, EventArgs e)
+        {
+            Settings dialog = new Settings();
+            if(dialog.ShowDialog() == DialogResult.OK)
+            {
+                dialog.Dispose();
+            }
+        }
+
+        private void clearFilterListBtn_Click(object sender, EventArgs e)
+        {
+            CancelDialog cancelDialog = new CancelDialog();
+            cancelDialog.EditLblText = "clear the filter list?";
+            if(Filters.Count > 0 && cancelDialog.ShowDialog() == DialogResult.OK)
+            {
+                Filters = new List<Filter>();
+                filterListBox.Items.Clear();
+            }
+        }
+    }
+
+    public class SettingsStore
+    {
+        public string InputLocation { get; set; }
+        public string OutputLocation { get; set; }
+        public Filter.InputType DefaultInputType { get; set; }
+        public Filter.Type DefaultType { get; set; }
+        public string DefaultFilterList { get; set; }
+        public bool IsDefault { get; set; }
+
+        public void Load()
+        {
+            if (File.Exists(Main.AppSettingsSavePath))
+            {
+                JsonParser jsonString = JsonParser.Deserialize(File.ReadAllText(Main.AppSettingsSavePath));
+                Main.AppSettings = jsonString.Value.ToObject<SettingsStore>();
+                Main.Filters = string.IsNullOrEmpty(Main.AppSettings.DefaultFilterList) ? Main.Filters : JsonParser.Deserialize(Main.AppSettings.DefaultFilterList).Value.ToObject<List<Filter>>();
+                Main.AppSettings.IsDefault = false;
+            }
+            else
+            {
+                Main.AppSettings.InputLocation = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\CSVs";
+                Main.AppSettings.OutputLocation = $@"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}\CSVs\FilterOutputs";
+                Main.AppSettings.DefaultInputType = Filter.InputType.Numeric;
+                Main.AppSettings.DefaultType = (Filter.Type)2;
+                Main.AppSettings.DefaultFilterList = "";
+                Main.AppSettings.IsDefault = true;
+            }
+        }
+
+        public void Save()
+        {
+            if(!Directory.Exists(new FileInfo(Main.AppSettingsSavePath).Directory.FullName))
+            {
+                Directory.CreateDirectory(new FileInfo(Main.AppSettingsSavePath).Directory.FullName);
+            }
+            File.WriteAllText(Main.AppSettingsSavePath, JsonParser.Serialize(JsonParser.FromValue(Main.AppSettings)));
         }
     }
 
@@ -221,27 +251,28 @@ namespace ExcelAddIn1
     {
         public enum Type
         {
-            Equal,
-            Ranged,
-            NotEqual,
-            Greater,
-            GreaterOrEqual,
-            Lesser,
-            LesserOrEqual,
             StartsWith,
-            Contains
+            Contains,
+            EqualTo,
+            NotEqualTo,
+            GreaterThan,
+            GreaterThanOrEqualTo,
+            LesserThan,
+            LessThanOrEqualTo,
+            WithinRange
         }
         public enum InputType
         {
             Numeric,
-            String,
-            DaysOld
+            DaysOld,
+            String
         }
         public enum OutputType
         {
             None,
             Edit,
-            Insert
+            Insert,
+            Copy
         }
 
         public string ValueMax { get; set; }
@@ -249,6 +280,7 @@ namespace ExcelAddIn1
         public string SelectedColumn { get; set; }
         public string DisplayName { get; set; }
         public string DaysOldValue { get; set; }
+        public string EditHeaderName { get; set; }
         public string EditColumn { get; set; }
         public string EditValue { get; set; }
         public int Index { get; set; }
