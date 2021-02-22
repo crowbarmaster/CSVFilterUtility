@@ -11,6 +11,8 @@ namespace ExcelAddIn1
             InitializeComponent();
             errLbl.Text = errMsg;
             msgLbl.Text = msgDetail;
+            MaximizeBox = false;
+            MinimizeBox = false;
         }
 
         private void OkayBtn_Click(object sender, EventArgs e)

@@ -29,6 +29,7 @@ namespace ExcelAddIn1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AlertDialog));
             this.errLbl = new System.Windows.Forms.Label();
             this.msgLbl = new System.Windows.Forms.Label();
             this.OkayBtn = new System.Windows.Forms.Button();
@@ -68,11 +69,16 @@ namespace ExcelAddIn1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(516, 114);
             this.Controls.Add(this.OkayBtn);
             this.Controls.Add(this.msgLbl);
             this.Controls.Add(this.errLbl);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AlertDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Error!";
             this.ResumeLayout(false);
             this.PerformLayout();
