@@ -36,7 +36,7 @@ namespace ExcelAddIn1
             this.rangeMaxLbl = new System.Windows.Forms.Label();
             this.matchBox = new System.Windows.Forms.TextBox();
             this.rangeMaxBox = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.columnLbl = new System.Windows.Forms.Label();
             this.columnBox = new System.Windows.Forms.TextBox();
             this.filterEditLbl = new System.Windows.Forms.Label();
             this.filterEditColBox = new System.Windows.Forms.TextBox();
@@ -120,15 +120,15 @@ namespace ExcelAddIn1
             this.rangeMaxBox.Visible = false;
             this.rangeMaxBox.TextChanged += new System.EventHandler(this.rangeMaxBox_TextChanged);
             // 
-            // label2
+            // columnLbl
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(16, 159);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(77, 14);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Search column:";
+            this.columnLbl.AutoSize = true;
+            this.columnLbl.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.columnLbl.Location = new System.Drawing.Point(16, 159);
+            this.columnLbl.Name = "columnLbl";
+            this.columnLbl.Size = new System.Drawing.Size(77, 14);
+            this.columnLbl.TabIndex = 8;
+            this.columnLbl.Text = "Search column:";
             // 
             // columnBox
             // 
@@ -320,7 +320,7 @@ namespace ExcelAddIn1
             this.Controls.Add(this.filterEditColBox);
             this.Controls.Add(this.filterEditLbl);
             this.Controls.Add(this.columnBox);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.columnLbl);
             this.Controls.Add(this.rangeMaxBox);
             this.Controls.Add(this.matchBox);
             this.Controls.Add(this.rangeMaxLbl);
@@ -348,7 +348,7 @@ namespace ExcelAddIn1
         private System.Windows.Forms.Label rangeMaxLbl;
         private System.Windows.Forms.TextBox matchBox;
         private System.Windows.Forms.TextBox rangeMaxBox;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label columnLbl;
         private System.Windows.Forms.TextBox columnBox;
         private System.Windows.Forms.Label filterEditLbl;
         private System.Windows.Forms.TextBox filterEditColBox;
