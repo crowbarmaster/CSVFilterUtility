@@ -103,9 +103,9 @@ namespace ExcelAddIn1
             // 
             // setDefaultListBtn
             // 
-            this.setDefaultListBtn.Location = new System.Drawing.Point(126, 170);
+            this.setDefaultListBtn.Location = new System.Drawing.Point(121, 170);
             this.setDefaultListBtn.Name = "setDefaultListBtn";
-            this.setDefaultListBtn.Size = new System.Drawing.Size(160, 23);
+            this.setDefaultListBtn.Size = new System.Drawing.Size(173, 23);
             this.setDefaultListBtn.TabIndex = 6;
             this.setDefaultListBtn.Text = "Set current filter list as default";
             this.setDefaultListBtn.UseVisualStyleBackColor = true;
@@ -113,9 +113,9 @@ namespace ExcelAddIn1
             // 
             // saveSettingsBtn
             // 
-            this.saveSettingsBtn.Location = new System.Drawing.Point(126, 199);
+            this.saveSettingsBtn.Location = new System.Drawing.Point(121, 199);
             this.saveSettingsBtn.Name = "saveSettingsBtn";
-            this.saveSettingsBtn.Size = new System.Drawing.Size(160, 23);
+            this.saveSettingsBtn.Size = new System.Drawing.Size(173, 23);
             this.saveSettingsBtn.TabIndex = 7;
             this.saveSettingsBtn.Text = "Save settings";
             this.saveSettingsBtn.UseVisualStyleBackColor = true;
@@ -147,7 +147,7 @@ namespace ExcelAddIn1
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(418, 234);
+            this.ClientSize = new System.Drawing.Size(426, 234);
             this.Controls.Add(this.filterOpDefaultDropBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.saveSettingsBtn);

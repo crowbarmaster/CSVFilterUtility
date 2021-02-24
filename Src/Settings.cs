@@ -88,7 +88,14 @@ namespace ExcelAddIn1
                     }
                 }
             }
-            filterOpDefaultDropBox.SelectedIndex = Main.AppSettings.IsDefault ? 0 : (int)Main.AppSettings.DefaultType;
+            if (Main.AppSettings.IsDefault)
+            {
+                filterOpDefaultDropBox.SelectedIndex = 0;
+            }
+            else
+            {
+                filterOpDefaultDropBox.SelectedItem = Enum.GetName(typeof(Filter.Type), Main.AppSettings.DefaultType);
+            }
             filterOpDefaultDropBox.Refresh();
 
         }
