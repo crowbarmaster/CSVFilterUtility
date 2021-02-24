@@ -154,7 +154,7 @@ namespace ExcelAddIn1
                 }
                 else
                 {
-
+                    
                     string[] line = regx.Split(input); // split the line to string array.
                     int columnToSearch = ParseCharsToInt(filter.SelectedColumn.ToCharArray());
                     if (line.Length <= columnToSearch)
@@ -163,7 +163,7 @@ namespace ExcelAddIn1
                         filter.KillFlag = true;
                         return;
                     }
-                    bool shouldWrite = PerformFilter(filter.SelectedInput, filter.SelectedType, filter.ValueMatch, filter.ValueMax, line[columnToSearch]);
+                    bool shouldWrite = PerformFilter(filter.SelectedInput, filter.SelectedType, filter.ValueMatch, filter.ValueMax, filter.SelectedInput == Filter.InputType.LineRemover ? "" : line[columnToSearch]);
                     if (KillFlag)
                     {
                         filter.KillFlag = true;
@@ -278,6 +278,8 @@ namespace ExcelAddIn1
 
         private int ParseCharsToInt(char[] columnChars)
         {
+            if (columnChars.Length == 0)
+                return 0;
             int columnCharsLength = columnChars.Length;
             int multiplier;
             int columnToSearch;
@@ -298,113 +300,164 @@ namespace ExcelAddIn1
         private bool PerformFilter(Filter.InputType inType, Filter.Type opType, string minMatchValue, string valMax, string compValue)
         {
             bool shouldWrite = false;
-            switch (inType)
+
+            if (inType == Filter.InputType.Numeric)
             {
-                case Filter.InputType.Numeric:
-                    compValue = compValue.Replace("$", "").Replace(",", "").Replace("\"", "").Trim();
-                    if (double.TryParse(minMatchValue, out double value) && double.TryParse(compValue, out double columnValue))
+                compValue = compValue.Replace("$", "").Replace(",", "").Replace("\"", "").Trim();
+                if (double.TryParse(minMatchValue, out double value) && double.TryParse(compValue, out double columnValue))
+                {
+                    if (opType == Filter.Type.EqualTo)
                     {
-                        switch (opType)
+                        shouldWrite = minMatchValue == compValue;
+                    }
+
+                    else if (opType == Filter.Type.NotEqualTo)
+                    {
+                        shouldWrite = minMatchValue != compValue;
+                    }
+
+                    else if (opType == Filter.Type.GreaterThan)
+                    {
+                        shouldWrite = columnValue > value;
+                    }
+
+                    else if (opType == Filter.Type.LesserThan)
+                    {
+                        shouldWrite = columnValue < value;
+                    }
+
+                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
+                    {
+                        shouldWrite = columnValue >= value;
+                    }
+
+                    else if (opType == Filter.Type.LessThanOrEqualTo)
+                    {
+                        shouldWrite = columnValue <= value;
+                    }
+                    else if (opType == Filter.Type.WithinRange)
+                    {
+                        if (double.TryParse(valMax, out double maxValue))
                         {
-                            case Filter.Type.EqualTo:
-                                shouldWrite = minMatchValue == compValue;
-                                break;
-                            case Filter.Type.NotEqualTo:
-                                shouldWrite = minMatchValue != compValue;
-                                break;
-                            case Filter.Type.GreaterThan:
-                                shouldWrite = columnValue > value;
-                                break;
-                            case Filter.Type.LesserThan:
-                                shouldWrite = columnValue < value;
-                                break;
-                            case Filter.Type.GreaterThanOrEqualTo:
-                                shouldWrite = columnValue >= value;
-                                break;
-                            case Filter.Type.LessThanOrEqualTo:
-                                shouldWrite = columnValue <= value;
-                                break;
-                            case Filter.Type.WithinRange:
-                                if (double.TryParse(valMax, out double maxValue))
-                                {
-                                    shouldWrite = columnValue > value && columnValue < maxValue;
-                                }
-                                else
-                                {
-                                    ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
-                                    KillFlag = true;
-                                    return false;
-                                }
-                                break;
+                            shouldWrite = columnValue >= value && columnValue <= maxValue;
+                        }
+                        else
+                        {
+                            ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
+                            KillFlag = true;
+                            return false;
                         }
                     }
-                    else
-                    {
-                        ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
-                        KillFlag = true;
-                        return false;
-                    }
-                    break;
-                case Filter.InputType.String:
-                    switch (opType)
-                    {
-                        case Filter.Type.EqualTo:
-                            shouldWrite = compValue == minMatchValue;
-                            break;
-                        case Filter.Type.NotEqualTo:
-                            shouldWrite = compValue != minMatchValue;
-                            break;
-                        case Filter.Type.StartsWith:
-                            shouldWrite = compValue.StartsWith(minMatchValue);
-                            break;
-                        case Filter.Type.Contains:
-                            shouldWrite = compValue.Contains(minMatchValue);
-                            break;
-                    }
-                    break;
-                case Filter.InputType.DaysOld:
-                    TimeSpan timeToRemove = new TimeSpan(int.Parse(minMatchValue), 0, 0, 0);
-                    DateTime compareDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(timeToRemove);
 
-                    DateTime maxDate;
+                }
+                else
+                {
+                    ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
+                    KillFlag = true;
+                    return false;
+                }
+            }
+            else if (inType == Filter.InputType.String)
+            {
+                if (opType == Filter.Type.EqualTo)
+                {
+                    shouldWrite = compValue == minMatchValue;
+                }
+                else if (opType == Filter.Type.NotEqualTo)
+                {
+                    shouldWrite = compValue != minMatchValue;
+                }
+                else if (opType == Filter.Type.StartsWith)
+                {
+                    shouldWrite = compValue.StartsWith(minMatchValue);
+                }
+                else if (opType == Filter.Type.Contains)
+                {
+                    shouldWrite = compValue.Contains(minMatchValue);
+                }
+            }
+            else if (inType == Filter.InputType.DaysOld)
+            {
+                TimeSpan timeToRemove = new TimeSpan(int.Parse(minMatchValue), 0, 0, 0);
+                DateTime compareDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(timeToRemove);
 
-                    DateTime parseDate;
-                    if (DateTime.TryParse(compValue, out parseDate))
+                DateTime maxDate;
+
+                DateTime parseDate;
+                if (DateTime.TryParse(compValue, out parseDate))
+                {
+                    if (opType == Filter.Type.EqualTo)
                     {
-                        switch (opType)
-                        {
-                            case Filter.Type.EqualTo:
-                                shouldWrite = parseDate.Date == compareDate.Date;
-                                break;
-                            case Filter.Type.NotEqualTo:
-                                shouldWrite = parseDate.Date != compareDate.Date;
-                                break;
-                            case Filter.Type.GreaterThan:
-                                shouldWrite = compareDate.Date > parseDate.Date;
-                                break;
-                            case Filter.Type.LesserThan:
-                                shouldWrite = compareDate.Date < parseDate.Date;
-                                break;
-                            case Filter.Type.GreaterThanOrEqualTo:
-                                shouldWrite = compareDate.Date >= parseDate.Date;
-                                break;
-                            case Filter.Type.LessThanOrEqualTo:
-                                shouldWrite = compareDate.Date <= parseDate.Date;
-                                break;
-                            case Filter.Type.WithinRange:
-                                TimeSpan spanMax = new TimeSpan(int.Parse(valMax), 0, 0, 0);
-                                maxDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(spanMax);
-                                shouldWrite = parseDate.Date <= compareDate.Date && parseDate.Date >= maxDate.Date;
-                                break;
-                        }
+                        shouldWrite = parseDate.Date == compareDate.Date;
                     }
-                    else
+                    else if (opType == Filter.Type.NotEqualTo)
                     {
-                        ThrowErrorMsg("Error parsing text into a date value.", $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})");
-                        KillFlag = true;
-                        return false;
+                        shouldWrite = parseDate.Date != compareDate.Date;
                     }
-                    break;
+                    else if (opType == Filter.Type.GreaterThan)
+                    {
+                        shouldWrite = compareDate.Date > parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.LesserThan)
+                    {
+                        shouldWrite = compareDate.Date < parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
+                    {
+                        shouldWrite = compareDate.Date >= parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.LessThanOrEqualTo)
+                    {
+                        shouldWrite = compareDate.Date <= parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.WithinRange)
+                    {
+                        TimeSpan spanMax = new TimeSpan(int.Parse(valMax), 0, 0, 0);
+                        maxDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(spanMax);
+                        shouldWrite = parseDate.Date <= compareDate.Date && parseDate.Date >= maxDate.Date;
+                    }
+                }
+                else
+                {
+                    ThrowErrorMsg("Error parsing text into a date value.", $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})");
+                    KillFlag = true;
+                    return false;
+                }
+            }
+            else if (inType == Filter.InputType.LineRemover)
+            {
+                if (int.TryParse(minMatchValue, out int value2))
+
+                    if (opType == Filter.Type.EqualTo)
+                    {
+                        shouldWrite = value2 != curIndex;
+                    }
+                    else if (opType == Filter.Type.NotEqualTo)
+                    {
+                        shouldWrite = value2 == curIndex;
+                    }
+                    else if (opType == Filter.Type.GreaterThan)
+                    {
+                        shouldWrite = value2 < curIndex;
+                    }
+                    else if (opType == Filter.Type.LesserThan)
+                    {
+                        shouldWrite = value2 > curIndex;
+                    }
+                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
+                    {
+                        shouldWrite = value2 <= curIndex;
+                    }
+                    else if (opType == Filter.Type.LessThanOrEqualTo)
+                    {
+                        shouldWrite = value2 >= curIndex;
+                    }
+                    else if (opType == Filter.Type.WithinRange)
+                    {
+                        value2 = int.Parse(minMatchValue);
+                        int valueMax2 = int.Parse(valMax);
+                        shouldWrite = curIndex > value2 && curIndex > valueMax2 || curIndex < value2 && curIndex < valueMax2;
+                    }
             }
             return shouldWrite;
         }
