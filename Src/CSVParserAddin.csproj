@@ -182,54 +182,54 @@
     can be found.
   -->
   <ItemGroup>
-    <Compile Include="AddFilter.cs">
+    <Compile Include="Forms\AddFilter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddFilter.designer.cs">
+    <Compile Include="Forms\AddFilter.designer.cs">
       <DependentUpon>AddFilter.cs</DependentUpon>
     </Compile>
-    <Compile Include="AlertDialog.cs">
+    <Compile Include="Forms\AlertDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AlertDialog.designer.cs">
+    <Compile Include="Forms\AlertDialog.designer.cs">
       <DependentUpon>AlertDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="CancelDialog.cs">
+    <Compile Include="Forms\CancelDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CancelDialog.designer.cs">
+    <Compile Include="Forms\CancelDialog.designer.cs">
       <DependentUpon>CancelDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonParser.cs" />
-    <Compile Include="Main.cs">
+    <Compile Include="Forms\Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.designer.cs">
+    <Compile Include="Forms\Main.designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="ParseCSV.cs" />
-    <Compile Include="ProgressDialog.cs">
+    <Compile Include="Forms\ProgressDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProgressDialog.designer.cs">
+    <Compile Include="Forms\ProgressDialog.designer.cs">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="AddFilter.resx">
+    <EmbeddedResource Include="Forms\AddFilter.resx">
       <DependentUpon>AddFilter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AlertDialog.resx">
+    <EmbeddedResource Include="Forms\AlertDialog.resx">
       <DependentUpon>AlertDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CancelDialog.resx">
+    <EmbeddedResource Include="Forms\CancelDialog.resx">
       <DependentUpon>CancelDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main.resx">
+    <EmbeddedResource Include="Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProgressDialog.resx">
+    <EmbeddedResource Include="Forms\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -241,7 +241,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Settings.resx">
+    <EmbeddedResource Include="Forms\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StartBtn.resx">
@@ -257,10 +257,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs">
+    <Compile Include="Forms\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Settings.Designer.cs">
+    <Compile Include="Forms\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="StartBtn.cs">
