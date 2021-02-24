@@ -265,6 +265,7 @@ namespace ExcelAddIn1
         {
             Numeric,
             DaysOld,
+            LineRemover,
             String
         }
         public enum OutputType
