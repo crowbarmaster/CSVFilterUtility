@@ -14,6 +14,7 @@ namespace ExcelAddIn1
         ParseCSV csvParser;
         Progress<double> Progress;
         TextWriter mergeWriter;
+        bool MergeFiles = false;
         int indexCount = 0;
 
         public progressDialog(FileInfo inFile, string mergePath, bool mergeFiles, List<Filter> filters)
@@ -25,6 +26,7 @@ namespace ExcelAddIn1
             InFile = inFile;
             Filters = filters;
             fileSize = inFile.Length;
+            MergeFiles = mergeFiles;
 
             MaximizeBox = false;
             MinimizeBox = false;
@@ -35,68 +37,9 @@ namespace ExcelAddIn1
             }
             csvParser = new ParseCSV();
             Progress = new Progress<double>();
-            Progress.ProgressChanged += (s, value) =>
-            {
-                double val = ((value / fileSize) * 1000);
-                double part = value / 1024 / 1024;
-                double whole = fileSize / 1024 / 1024;
-                progressLbl.Text = $"Progress: {part:0.00} of {whole:0.00} MB";
-                progressBar.Value = (int)val;
-                bool waiting = true;
-                if (value == fileSize)
-                {
-                    while (waiting)
-                    {
-                        if (!csvParser.StopWatch.IsRunning)
-                        {
-                            if (csvParser.Aborted)
-                            {
-                                waiting = false;
-                                progressLbl.Text = $@"Process completed in error! Check filters or input file, and try again!";
-                                cancelBtn.Text = "Close";
-                                break;
-                            }
-                            if (mergeFiles)
-                            {
-                                waiting = false;
-                                bool wroteHeader = false;
-                                progressLbl.Text = "Merging filters to selected CSV file, please wait!";
-                                foreach(Filter filter in Filters)
-                                {
-                                    int index = 0;
-                                    TextReader reader = new StreamReader(filter.OutputFile);
-                                    string readLine;
-                                    while((readLine = reader.ReadLine()) != null)
-                                    {
-                                        if (!wroteHeader)
-                                        {
-                                            mergeWriter.WriteLine(readLine);
-                                            wroteHeader = true;
-                                        }
-                                        else
-                                        {
-                                            if(index > 0)
-                                            {
-                                                mergeWriter.WriteLine(readLine);
-                                            }
-                                        }
-                                        index++;
-                                    }
-                                    reader.Close();
-                                }
-                                mergeFiles = false;
-                                mergeWriter.Flush();
-                                mergeWriter.Close();
-                            }
-                            waiting = false;
-                            int LPS = (int)(csvParser.curIndex / csvParser.StopWatch.Elapsed.TotalSeconds);
-                            progressLbl.Text = $@"Process completed in {csvParser.StopWatch.Elapsed.ToString("mm")} minutes and {csvParser.StopWatch.Elapsed.ToString("ss")} seconds ({LPS} LPS)";
-                            cancelBtn.Text = "Close";
-                        }
-                    }
-                }
-            };
+            Progress.ProgressChanged += progressChanged;
         }
+
 
         public async void progressDialog_onShown(object s, EventArgs e)
         {
@@ -108,7 +51,7 @@ namespace ExcelAddIn1
         private void cancelBtn_Click(object sender, EventArgs e)
         {
             CancelDialog dialog = new CancelDialog();
-            if(cancelBtn.Text == "Close")
+            if (cancelBtn.Text == "Close")
             {
                 Close();
             }
@@ -122,5 +65,67 @@ namespace ExcelAddIn1
                 }
             }
         }
+
+        private void progressChanged(object s, double value)
+        {
+            {
+                double val = ((value / fileSize) * 1000);
+                double part = value / 1024 / 1024;
+                double whole = fileSize / 1024 / 1024;
+                progressLbl.Text = $"Progress: {part:0.00} of {whole:0.00} MB";
+                progressBar.Value = (int)val;
+                bool waiting = true;
+                if (value == fileSize)
+                {
+                    while (waiting)
+                    {
+                        if (!csvParser.StopWatch.IsRunning)
+                        {
+                            if (MergeFiles)
+                            {
+                                bool wroteHeader = false;
+                                progressLbl.Text = "Merging filters to selected CSV file, please wait!";
+                                foreach (Filter filter in Filters)
+                                {
+                                    int index = 0;
+                                    TextReader reader = new StreamReader(filter.OutputFile);
+                                    string readLine;
+                                    while ((readLine = reader.ReadLine()) != null)
+                                    {
+                                        if (!wroteHeader)
+                                        {
+                                            mergeWriter.WriteLine(readLine);
+                                            wroteHeader = true;
+                                        }
+                                        else
+                                        {
+                                            if (index > 0)
+                                            {
+                                                mergeWriter.WriteLine(readLine);
+                                            }
+                                        }
+                                        index++;
+                                    }
+                                    reader.Close();
+                                }
+                                MergeFiles = false;
+                                mergeWriter.Flush();
+                                mergeWriter.Close();
+                            }
+                            waiting = false;
+                            int LPS = (int)(csvParser.curIndex / csvParser.StopWatch.Elapsed.TotalSeconds);
+                            progressLbl.Text = $@"Process completed in {csvParser.StopWatch.Elapsed.ToString("mm")} minutes and {csvParser.StopWatch.Elapsed.ToString("ss")} seconds ({LPS} LPS)";
+                            cancelBtn.Text = "Close";
+                        }
+                    }
+                }
+                if (csvParser.Aborted)
+                {
+                    progressLbl.Text = $@"Process completed in error! Check filters or input file, and try again! (Line {csvParser.curIndex})";
+                    cancelBtn.Text = "Close";
+                }
+            }
+        }
     }
 }
+

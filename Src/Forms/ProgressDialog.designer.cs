@@ -56,10 +56,10 @@ namespace ExcelAddIn1
             // progressLbl
             // 
             this.progressLbl.AutoSize = true;
-            this.progressLbl.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.progressLbl.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.progressLbl.Location = new System.Drawing.Point(12, 65);
             this.progressLbl.Name = "progressLbl";
-            this.progressLbl.Size = new System.Drawing.Size(174, 21);
+            this.progressLbl.Size = new System.Drawing.Size(141, 19);
             this.progressLbl.TabIndex = 3;
             this.progressLbl.Text = "Progress: 0 of 0 bytes";
             // 
