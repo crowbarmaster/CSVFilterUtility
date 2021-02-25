@@ -57,7 +57,7 @@ namespace ExcelAddIn1
             // 
             // OkayBtn
             // 
-            this.OkayBtn.Location = new System.Drawing.Point(222, 79);
+            this.OkayBtn.Location = new System.Drawing.Point(350, 79);
             this.OkayBtn.Name = "OkayBtn";
             this.OkayBtn.Size = new System.Drawing.Size(75, 23);
             this.OkayBtn.TabIndex = 2;
@@ -70,7 +70,7 @@ namespace ExcelAddIn1
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(516, 114);
+            this.ClientSize = new System.Drawing.Size(777, 114);
             this.Controls.Add(this.OkayBtn);
             this.Controls.Add(this.msgLbl);
             this.Controls.Add(this.errLbl);
