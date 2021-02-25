@@ -22,6 +22,11 @@ namespace ExcelAddIn1
             InitializeComponent();
 
             AppSettings.Load();
+            if (AppSettings.IsDefault)
+            {
+                settingsBtn_Click(null, null);
+            }
+           
             if(Filters.Count > 0)
             {
                 filterListBox.Enabled = true;
@@ -265,6 +270,7 @@ namespace ExcelAddIn1
         {
             Numeric,
             DaysOld,
+            FromDate,
             LineRemover,
             String
         }

@@ -88,7 +88,7 @@ namespace ExcelAddIn1
             this.filterListBox.ItemHeight = 14;
             this.filterListBox.Location = new System.Drawing.Point(205, 109);
             this.filterListBox.Name = "filterListBox";
-            this.filterListBox.Size = new System.Drawing.Size(290, 200);
+            this.filterListBox.Size = new System.Drawing.Size(335, 200);
             this.filterListBox.TabIndex = 11;
             this.filterListBox.SelectedIndexChanged += new System.EventHandler(this.filterListBox_SelectedIndexChanged);
             // 
@@ -186,7 +186,7 @@ namespace ExcelAddIn1
             // 
             // settingsBtn
             // 
-            this.settingsBtn.Location = new System.Drawing.Point(420, 11);
+            this.settingsBtn.Location = new System.Drawing.Point(465, 11);
             this.settingsBtn.Name = "settingsBtn";
             this.settingsBtn.Size = new System.Drawing.Size(75, 23);
             this.settingsBtn.TabIndex = 10;
@@ -223,10 +223,11 @@ namespace ExcelAddIn1
             // 
             // Main
             // 
+            this.AcceptButton = this.doRemoveBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(507, 321);
+            this.ClientSize = new System.Drawing.Size(552, 321);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.clearFilterListBtn);
