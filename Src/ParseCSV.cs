@@ -21,13 +21,27 @@ namespace ExcelAddIn1
         {
             StopWatch = new Stopwatch();
             StopWatch.Start();
-            inputStream = File.OpenRead(inFileInfo.FullName);
+            KillFlag = false;
+
+            try
+            {
+                inputStream = File.OpenRead(inFileInfo.FullName);
+            }
+            catch (Exception e) 
+            {
+                if(new AlertDialog(e.GetType().Name, e.Message).ShowDialog() == DialogResult.OK)
+                {
+                    KillFlag = Aborted = true;
+                    progress.Report(0);
+                    return 0;
+                }
+            }
+
             inputReader = new StreamReader(inputStream);
             Progress = progress;
             long fileSize = inputStream.Length;
             string curLine = null;
 
-            KillFlag = false;
             while (!KillFlag)
             {
                 progress.Report(inputStream.Position);
@@ -415,6 +429,52 @@ namespace ExcelAddIn1
                         TimeSpan spanMax = new TimeSpan(int.Parse(valMax), 0, 0, 0);
                         maxDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(spanMax);
                         shouldWrite = parseDate.Date <= compareDate.Date && parseDate.Date >= maxDate.Date;
+                    }
+                }
+                else
+                {
+                    ThrowErrorMsg("Error parsing text into a date value.", $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})");
+                    KillFlag = true;
+                    return false;
+                }
+            }
+            else if (inType == Filter.InputType.FromDate)
+            {
+                DateTime compareDate = DateTime.Parse(minMatchValue);
+
+                DateTime maxDate;
+
+                DateTime parseDate;
+                if (DateTime.TryParse(compValue, out parseDate))
+                {
+                    if (opType == Filter.Type.EqualTo)
+                    {
+                        shouldWrite = parseDate.Date == compareDate.Date;
+                    }
+                    else if (opType == Filter.Type.NotEqualTo)
+                    {
+                        shouldWrite = parseDate.Date != compareDate.Date;
+                    }
+                    else if (opType == Filter.Type.GreaterThan)
+                    {
+                        shouldWrite = compareDate.Date < parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.LesserThan)
+                    {
+                        shouldWrite = compareDate.Date > parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
+                    {
+                        shouldWrite = compareDate.Date <= parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.LessThanOrEqualTo)
+                    {
+                        shouldWrite = compareDate.Date >= parseDate.Date;
+                    }
+                    else if (opType == Filter.Type.WithinRange)
+                    {
+                        maxDate = DateTime.Parse(valMax);
+                        shouldWrite = parseDate.Date >= compareDate.Date && parseDate.Date <= maxDate.Date;
                     }
                 }
                 else
