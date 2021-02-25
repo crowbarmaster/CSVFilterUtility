@@ -90,25 +90,27 @@ namespace ExcelAddIn1
             saveFileDialog.InitialDirectory = Main.AppSettings.OutputLocation;
             Directory.CreateDirectory(saveFileDialog.InitialDirectory);
 
+            string fixSlashes = matchBox.Text.Replace('/', '-');
+            string fixSlashesMax = rangeMaxBox.Text.Replace('/', '-');
             saveFileDialog.FileName = selectedInput != Filter.InputType.LineRemover && checkedType == Filter.Type.WithinRange ?
-                $"{inFileName}-{columnBox.Text}_within_{matchBox.Text}_to_{rangeMaxBox.Text}.{Enum.GetName(inType, selectedInput)}.csv" : selectedInput == Filter.InputType.LineRemover && checkedType == Filter.Type.WithinRange ?
-                $"{inFileName}-remove_{matchBox.Text}_to_{rangeMaxBox.Text}.{Enum.GetName(inType, selectedInput)}.csv" : selectedInput == Filter.InputType.LineRemover && checkedType != Filter.Type.WithinRange ?
-                $"{inFileName}-remove_{checkedType}_{matchBox.Text}.{Enum.GetName(inType, selectedInput)}.csv" : $"{inFileName}-{columnBox.Text}_{checkedType}_{matchBox.Text}.{Enum.GetName(inType, selectedInput)}.csv";
+                $"{inFileName}-{columnBox.Text}_within_{fixSlashes}_to_{fixSlashesMax}.{Enum.GetName(inType, selectedInput)}.csv" : selectedInput == Filter.InputType.LineRemover && checkedType == Filter.Type.WithinRange ?
+                $"{inFileName}-remove_{fixSlashes}_to_{rangeMaxBox.Text}.{Enum.GetName(inType, selectedInput)}.csv" : selectedInput == Filter.InputType.LineRemover && checkedType != Filter.Type.WithinRange ?
+                $"{inFileName}-remove_{checkedType}_{fixSlashes}.{Enum.GetName(inType, selectedInput)}.csv" : $"{inFileName}-{columnBox.Text}_{checkedType}_{fixSlashes}.{Enum.GetName(inType, selectedInput)}.csv";
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 string savePath = saveFileDialog.FileName;
                 FilterToPass.DisplayName = checkedType == Filter.Type.EqualTo ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} equals \"{matchBox.Text}\"" : checkedType == Filter.Type.NotEqualTo ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} does not equal \"{matchBox.Text}\"" : checkedType == Filter.Type.GreaterThan ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is more than \"{matchBox.Text}\"" : checkedType == Filter.Type.LesserThan ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is less than \"{matchBox.Text}\"" : checkedType == Filter.Type.GreaterThanOrEqualTo ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is more than or equal to \"{matchBox.Text}\"" : checkedType == Filter.Type.LessThanOrEqualTo ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is less than or equal to \"{matchBox.Text}\"" : checkedType == Filter.Type.StartsWith ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} starts with \"{matchBox.Text}\"" : checkedType == Filter.Type.Contains ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} contains \"{matchBox.Text}\"" : checkedType == Filter.Type.WithinRange && selectedInput == Filter.InputType.LineRemover ?
-                    $"Remove lines \"{matchBox.Text}\" through \"{rangeMaxBox.Text}\"" : checkedType == Filter.Type.WithinRange ?
-                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} greater than \"{matchBox.Text}\" but less than \"{rangeMaxBox.Text}\"" : "";
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} equals \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.NotEqualTo ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} does not equal \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.GreaterThan ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is more than \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.LesserThan ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is less than \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.GreaterThanOrEqualTo ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is more than or equal to \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.LessThanOrEqualTo ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} is less than or equal to \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.StartsWith ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} starts with \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.Contains ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} contains \"{matchBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.WithinRange && selectedInput == Filter.InputType.LineRemover ?
+                    $"Remove lines \"{matchBox.Text}\" through \"{rangeMaxBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : checkedType == Filter.Type.WithinRange ?
+                    $"Type: {Enum.GetName(inType, selectedInput)}; Column {columnBox.Text} greater than \"{matchBox.Text}\" but less than \"{rangeMaxBox.Text}\"; {Enum.GetName(typeof(Filter.OutputType), selectedOutput)}" : "";
 
                 FilterToPass.ValueMatch = matchBox.Text;
                 FilterToPass.ValueMax = checkedType == Filter.Type.WithinRange ? rangeMaxBox.Text : null;
@@ -130,7 +132,7 @@ namespace ExcelAddIn1
         {
             rangeMaxBox.Enabled = checkedType == Filter.Type.WithinRange && matchBox.TextLength > 0;
             columnBox.Enabled = checkedType != Filter.Type.WithinRange && matchBox.TextLength > 0;
-            saveAllChkBox.Enabled = saveBtn.Enabled = rangeMaxBox.TextLength > 0 && selectedInput == Filter.InputType.LineRemover;
+            saveAllChkBox.Enabled = saveBtn.Enabled = matchBox.TextLength > 0 && selectedInput == Filter.InputType.LineRemover;
         }
 
         private void rangeMaxBox_TextChanged(object sender, EventArgs e)
@@ -193,6 +195,7 @@ namespace ExcelAddIn1
             filterEditDropBox.Enabled = columnBox.Enabled = columnBox.Visible = columnLbl.Visible = columnLbl.Enabled = selectedInput != Filter.InputType.LineRemover;
             filterOpDropBox.SelectedIndex = 0;
             filterOpDropBox.Refresh();
+            filterEditDropBox.SelectedIndex = 0;
         }
 
         private void filterOpDropBox_SelectedIndexChanged(object sender, EventArgs e)
