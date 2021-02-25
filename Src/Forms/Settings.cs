@@ -52,10 +52,9 @@ namespace ExcelAddIn1
 
         private void setDefaultListBtn_Click(object sender, EventArgs e)
         {
-            if(Main.Filters.Count > 0)
-            {
-                Main.AppSettings.DefaultFilterList = JsonParser.Serialize(JsonParser.FromValue(Main.Filters));
-            }
+
+                Main.AppSettings.DefaultFilterList = Main.Filters.Count > 0 ? JsonParser.Serialize(JsonParser.FromValue(Main.Filters)) : "";
+
         }
 
         private void saveSettingsBtn_Click(object sender, EventArgs e)
