@@ -22,14 +22,13 @@ namespace ExcelAddIn1
             StopWatch = new Stopwatch();
             StopWatch.Start();
             KillFlag = false;
-
             try
             {
                 inputStream = File.OpenRead(inFileInfo.FullName);
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
-                if(new AlertDialog(e.GetType().Name, e.Message).ShowDialog() == DialogResult.OK)
+                if (new AlertDialog(e.GetType().Name, e.Message).ShowDialog() == DialogResult.OK)
                 {
                     KillFlag = Aborted = true;
                     progress.Report(0);
@@ -58,10 +57,10 @@ namespace ExcelAddIn1
                         {
                             filter.FilterWriter = new StreamWriter(filter.OutputFile, false);
                         }
-                        catch (Exception)
+                        catch (IOException e)
                         {
-                            ThrowErrorMsg("Error opening file!", $"Please verify that the file for filter {filter.DisplayName} is not opened in anything!");
-                            filter.KillFlag = true;
+                            ThrowErrorMsg("Error opening file!", e.Message);
+                            Aborted = filter.KillFlag = KillFlag = true;
                             return 0;
                         }
                     }
@@ -128,7 +127,7 @@ namespace ExcelAddIn1
                                 input = ArrayToString(line, ',');
                             }
                         }
-                        if(filter.SelectedOutput == Filter.OutputType.Insert)
+                        if (filter.SelectedOutput == Filter.OutputType.Insert)
                         {
                             string[] newLine = new string[line.Length + 1];
                             if (columnToEdit <= line.Length)
@@ -143,7 +142,7 @@ namespace ExcelAddIn1
                             }
                             input = ArrayToString(newLine, ',');
                         }
-                        if(filter.SelectedOutput == Filter.OutputType.Copy)
+                        if (filter.SelectedOutput == Filter.OutputType.Copy)
                         {
                             int colToWrite = ParseCharsToInt(filter.EditValue.ToCharArray());
                             bool testWrite = filter.EditHeaderName != "Unchanged";
@@ -168,7 +167,6 @@ namespace ExcelAddIn1
                 }
                 else
                 {
-                    
                     string[] line = regx.Split(input); // split the line to string array.
                     int columnToSearch = ParseCharsToInt(filter.SelectedColumn.ToCharArray());
                     if (line.Length <= columnToSearch)
@@ -211,7 +209,7 @@ namespace ExcelAddIn1
                             input = ArrayToString(newLine, ',');
                         }
 
-                        if(filter.SelectedOutput == Filter.OutputType.Copy)
+                        if (filter.SelectedOutput == Filter.OutputType.Copy)
                         {
                             int colToRead = ParseCharsToInt(filter.EditColumn.ToCharArray());
                             int colToWrite = ParseCharsToInt(filter.EditValue.ToCharArray());
@@ -219,7 +217,7 @@ namespace ExcelAddIn1
 
                             if (colToRead >= 0 && colToWrite >= 0)
                             {
-                                if(colToWrite == line.Length)
+                                if (colToWrite == line.Length)
                                 {
                                     Array.Copy(line, newLine, colToWrite);
                                     newLine[colToWrite] = line[colToRead];
@@ -314,215 +312,89 @@ namespace ExcelAddIn1
         private bool PerformFilter(Filter.InputType inType, Filter.Type opType, string minMatchValue, string valMax, string compValue)
         {
             bool shouldWrite = false;
+            object value = new object();
+            object maxValue = new object();
+            object columnValue = new object();
 
             if (inType == Filter.InputType.Numeric)
             {
                 compValue = compValue.Replace("$", "").Replace(",", "").Replace("\"", "").Trim();
-                if (double.TryParse(minMatchValue, out double value) && double.TryParse(compValue, out double columnValue))
-                {
-                    if (opType == Filter.Type.EqualTo)
-                    {
-                        shouldWrite = minMatchValue == compValue;
-                    }
-
-                    else if (opType == Filter.Type.NotEqualTo)
-                    {
-                        shouldWrite = minMatchValue != compValue;
-                    }
-
-                    else if (opType == Filter.Type.GreaterThan)
-                    {
-                        shouldWrite = columnValue > value;
-                    }
-
-                    else if (opType == Filter.Type.LesserThan)
-                    {
-                        shouldWrite = columnValue < value;
-                    }
-
-                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
-                    {
-                        shouldWrite = columnValue >= value;
-                    }
-
-                    else if (opType == Filter.Type.LessThanOrEqualTo)
-                    {
-                        shouldWrite = columnValue <= value;
-                    }
-                    else if (opType == Filter.Type.WithinRange)
-                    {
-                        if (double.TryParse(valMax, out double maxValue))
-                        {
-                            shouldWrite = columnValue >= value && columnValue <= maxValue;
-                        }
-                        else
-                        {
-                            ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
-                            KillFlag = true;
-                            return false;
-                        }
-                    }
-
-                }
-                else
-                {
-                    ThrowErrorMsg("Error parsing text into a numeric value.", $"Please check the collumn your searching contains only a '$' or '.' and numbers! (Line {curIndex})");
-                    KillFlag = true;
-                    return false;
-                }
+                value = double.Parse(minMatchValue);
+                columnValue = double.Parse(compValue);
+                maxValue = opType == Filter.Type.WithinRange ? double.Parse(valMax) : 0;
             }
             else if (inType == Filter.InputType.String)
             {
-                if (opType == Filter.Type.EqualTo)
-                {
-                    shouldWrite = compValue == minMatchValue;
-                }
-                else if (opType == Filter.Type.NotEqualTo)
-                {
-                    shouldWrite = compValue != minMatchValue;
-                }
-                else if (opType == Filter.Type.StartsWith)
-                {
-                    shouldWrite = compValue.StartsWith(minMatchValue);
-                }
-                else if (opType == Filter.Type.Contains)
-                {
-                    shouldWrite = compValue.Contains(minMatchValue);
-                }
+                value = minMatchValue;
+                columnValue = compValue;
             }
             else if (inType == Filter.InputType.DaysOld)
             {
                 TimeSpan timeToRemove = new TimeSpan(int.Parse(minMatchValue), 0, 0, 0);
-                DateTime compareDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(timeToRemove);
+                TimeSpan spanMax = opType == Filter.Type.WithinRange ? new TimeSpan(int.Parse(valMax), 0, 0, 0) : new TimeSpan();
 
-                DateTime maxDate;
-
-                DateTime parseDate;
-                if (DateTime.TryParse(compValue, out parseDate))
-                {
-                    if (opType == Filter.Type.EqualTo)
-                    {
-                        shouldWrite = parseDate.Date == compareDate.Date;
-                    }
-                    else if (opType == Filter.Type.NotEqualTo)
-                    {
-                        shouldWrite = parseDate.Date != compareDate.Date;
-                    }
-                    else if (opType == Filter.Type.GreaterThan)
-                    {
-                        shouldWrite = compareDate.Date > parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.LesserThan)
-                    {
-                        shouldWrite = compareDate.Date < parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
-                    {
-                        shouldWrite = compareDate.Date >= parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.LessThanOrEqualTo)
-                    {
-                        shouldWrite = compareDate.Date <= parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.WithinRange)
-                    {
-                        TimeSpan spanMax = new TimeSpan(int.Parse(valMax), 0, 0, 0);
-                        maxDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(spanMax);
-                        shouldWrite = parseDate.Date <= compareDate.Date && parseDate.Date >= maxDate.Date;
-                    }
-                }
-                else
-                {
-                    ThrowErrorMsg("Error parsing text into a date value.", $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})");
-                    KillFlag = true;
-                    return false;
-                }
+                columnValue = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(timeToRemove).Date.Ticks;
+                value = DateTime.Parse(compValue).Date.Ticks;
+                maxValue = opType == Filter.Type.WithinRange ? new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0).Subtract(spanMax).Date.Ticks : 0;
             }
             else if (inType == Filter.InputType.FromDate)
             {
-                DateTime compareDate = DateTime.Parse(minMatchValue);
-
-                DateTime maxDate;
-
-                DateTime parseDate;
-                if (DateTime.TryParse(compValue, out parseDate))
-                {
-                    if (opType == Filter.Type.EqualTo)
-                    {
-                        shouldWrite = parseDate.Date == compareDate.Date;
-                    }
-                    else if (opType == Filter.Type.NotEqualTo)
-                    {
-                        shouldWrite = parseDate.Date != compareDate.Date;
-                    }
-                    else if (opType == Filter.Type.GreaterThan)
-                    {
-                        shouldWrite = compareDate.Date < parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.LesserThan)
-                    {
-                        shouldWrite = compareDate.Date > parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
-                    {
-                        shouldWrite = compareDate.Date <= parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.LessThanOrEqualTo)
-                    {
-                        shouldWrite = compareDate.Date >= parseDate.Date;
-                    }
-                    else if (opType == Filter.Type.WithinRange)
-                    {
-                        maxDate = DateTime.Parse(valMax);
-                        shouldWrite = parseDate.Date >= compareDate.Date && parseDate.Date <= maxDate.Date;
-                    }
-                }
-                else
-                {
-                    ThrowErrorMsg("Error parsing text into a date value.", $"Please check the column your searching contains only dates in dd/mm/yyyy format! (Line {curIndex})");
-                    KillFlag = true;
-                    return false;
-                }
+                columnValue = DateTime.Parse(compValue).Date.Ticks;
+                value = DateTime.Parse(minMatchValue).Date.Ticks;
+                maxValue = opType == Filter.Type.WithinRange ? DateTime.Parse(valMax).Date.Ticks : 0;
             }
             else if (inType == Filter.InputType.LineRemover)
             {
-                if (int.TryParse(minMatchValue, out int value2))
+                columnValue = (long)curIndex;
+                value = long.Parse(minMatchValue);
+                maxValue = opType == Filter.Type.WithinRange ? long.Parse(valMax) : 0;
+            }
 
-                    if (opType == Filter.Type.EqualTo)
-                    {
-                        shouldWrite = value2 != curIndex;
-                    }
-                    else if (opType == Filter.Type.NotEqualTo)
-                    {
-                        shouldWrite = value2 == curIndex;
-                    }
-                    else if (opType == Filter.Type.GreaterThan)
-                    {
-                        shouldWrite = value2 < curIndex;
-                    }
-                    else if (opType == Filter.Type.LesserThan)
-                    {
-                        shouldWrite = value2 > curIndex;
-                    }
-                    else if (opType == Filter.Type.GreaterThanOrEqualTo)
-                    {
-                        shouldWrite = value2 <= curIndex;
-                    }
-                    else if (opType == Filter.Type.LessThanOrEqualTo)
-                    {
-                        shouldWrite = value2 >= curIndex;
-                    }
-                    else if (opType == Filter.Type.WithinRange)
-                    {
-                        value2 = int.Parse(minMatchValue);
-                        int valueMax2 = int.Parse(valMax);
-                        shouldWrite = curIndex > value2 && curIndex > valueMax2 || curIndex < value2 && curIndex < valueMax2;
-                    }
+            if (opType == Filter.Type.GreaterThan)
+            {
+                shouldWrite = (long)columnValue > (long)value;
+            }
+
+            else if (opType == Filter.Type.LesserThan)
+            {
+                shouldWrite = (long)columnValue < (long)value;
+            }
+
+            else if (opType == Filter.Type.GreaterThanOrEqualTo)
+            {
+                shouldWrite = (long)columnValue >= (long)value;
+            }
+
+            else if (opType == Filter.Type.LessThanOrEqualTo)
+            {
+                shouldWrite = (long)columnValue <= (long)value;
+            }
+            else if (opType == Filter.Type.WithinRange)
+            {
+                shouldWrite = opType == Filter.Type.WithinRange && (long)columnValue >= (long)value && (long)columnValue <= (long)maxValue;
+            }
+            if (opType == Filter.Type.EqualTo)
+            {
+                shouldWrite = columnValue == value;
+            }
+            else if (opType == Filter.Type.NotEqualTo)
+            {
+                shouldWrite = columnValue != value;
+            }
+            else if (opType == Filter.Type.StartsWith)
+            {
+                shouldWrite = columnValue.ToString().StartsWith(value.ToString());
+            }
+            else if (opType == Filter.Type.Contains)
+            {
+                shouldWrite = columnValue.ToString().Contains(value.ToString());
+            }
+            if(inType == Filter.InputType.LineRemover)
+            {
+                return !shouldWrite;
             }
             return shouldWrite;
         }
-
-
 
         private void ThrowErrorMsg(string err, string msg)
         {
@@ -534,6 +406,5 @@ namespace ExcelAddIn1
                 return;
             }
         }
-
     }
 }
