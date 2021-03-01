@@ -117,12 +117,13 @@ namespace ExcelAddIn1
                             progressLbl.Text = $@"Process completed in {csvParser.StopWatch.Elapsed.ToString("mm")} minutes and {csvParser.StopWatch.Elapsed.ToString("ss")} seconds ({LPS} LPS)";
                             cancelBtn.Text = "Close";
                         }
+                        if (csvParser.Aborted)
+                        {
+                            waiting = false;
+                            progressLbl.Text = $@"Process completed in error! Check filters or input file, and try again! (Line {csvParser.curIndex})";
+                            cancelBtn.Text = "Close";
+                        }
                     }
-                }
-                if (csvParser.Aborted)
-                {
-                    progressLbl.Text = $@"Process completed in error! Check filters or input file, and try again! (Line {csvParser.curIndex})";
-                    cancelBtn.Text = "Close";
                 }
             }
         }
