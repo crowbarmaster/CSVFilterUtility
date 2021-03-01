@@ -47,7 +47,15 @@ namespace ExcelAddIn1
             {
                 Directory.CreateDirectory(openDialog.InitialDirectory);
             }
-            MinimizeBox = MaximizeBox = doRemoveBtn.Enabled = loadFiltersBtn.Enabled = saveFiltersBtn.Enabled = clearFilterListBtn.Enabled = RemoveBtn.Enabled = editBtn.Enabled = addBtn.Enabled = false;
+            MinimizeBox = 
+                MaximizeBox = 
+                doRemoveBtn.Enabled = 
+                loadFiltersBtn.Enabled = 
+                saveFiltersBtn.Enabled = 
+                clearFilterListBtn.Enabled = 
+                RemoveBtn.Enabled = 
+                editBtn.Enabled = 
+                addBtn.Enabled = false;
 
         }
 
@@ -86,7 +94,8 @@ namespace ExcelAddIn1
                 filterListBox.Items.Add(filterForm.FilterToPass.DisplayName);
             }
             filterListBox.Refresh();
-            doRemoveBtn.Enabled = filterListBox.Items.Count > 0 && openedFile != null;
+            doRemoveBtn.Enabled = 
+                filterListBox.Items.Count > 0 && openedFile != null;
         }
 
         private void editBtn_Click(object sender, EventArgs e)
@@ -122,10 +131,7 @@ namespace ExcelAddIn1
                 Filter filterToRem = null;
                 foreach (Filter filter in Filters)
                 {
-                    if (filter.DisplayName.Equals(filterListBox.SelectedItem))
-                    {
-                        filterToRem = filter;
-                    }
+                    filterToRem = filter.DisplayName.Equals(filterListBox.SelectedItem) ? filter : filterToRem;
                 }
                 if (!filterToRem.Equals(null))
                 {
@@ -179,7 +185,11 @@ namespace ExcelAddIn1
 
         private void mergeOutputChkBox_CheckedChanged(object sender, EventArgs e)
         {
-            mergeFiles = mergeOutputLbl.Enabled = mergeOutputLbl.Visible = mergeOutputBtn.Enabled = mergeOutputBtn.Visible = mergeOutputChkBox.Checked;
+            mergeFiles = 
+                mergeOutputLbl.Enabled = 
+                mergeOutputLbl.Visible = 
+                mergeOutputBtn.Enabled = 
+                mergeOutputBtn.Visible = mergeOutputChkBox.Checked;
         }
 
         private void mergeOutputBtn_Click(object sender, EventArgs e)
